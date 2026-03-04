@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Aether OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --ac: #00f2ff;
+            --ag: rgba(0, 242, 255, .35);
+            --ad: rgba(0, 242, 255, .12);
+            --gb: rgba(12, 14, 30, .55);
+            --gbr: rgba(255, 255, 255, .09);
+            --gh: rgba(255, 255, 255, .06);
+            --tp: rgba(255, 255, 255, .92);
+            --ts: rgba(255, 255, 255, .45);
+            --th: 56px;
+            --wr: 14px;
+            --tr: 40px;
+            --sw: 0 32px 80px rgba(0, 0, 0, .6), 0 0 0 1px var(--gbr);
+            --sa: 0 40px 100px rgba(0, 0, 0, .75), 0 0 0 1px rgba(0, 242, 255, .22), 0 0 40px rgba(0, 242, 255, .06);
+            --tf: .15s ease;
+            --ts2: .3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #03040d;
+            color: var(--tp);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none
+        }
+
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - var(--th));
+            background: #03040d;
+            overflow: hidden
+        }
+
+        #wc {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            display: block
+        }
+
+        #ig {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1
+        }
+
+        .di {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            width: 72px;
+            padding: 8px 4px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background var(--tf)
+        }
+
+        .di:hover {
+            background: rgba(255, 255, 255, .08)
+        }
+
+        .di:active {
+            background: var(--ad)
+        }
+
+        .di .ii {
+            width: 44px;
+            height: 44px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            background: var(--gb);
+            border: 1px solid var(--gbr);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+            transition: box-shadow var(--tf), transform var(--tf)
+        }
+
+        .di:hover .ii {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .5), 0 0 0 1px var(--ag);
+            transform: translateY(-2px)
+        }
+
+        .di span {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--tp);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+            text-align: center
+        }
+
+        #tb {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--th);
+            background: rgba(8, 10, 22, .7);
+            backdrop-filter: blur(32px) saturate(180%);
+            border-top: 1px solid var(--gbr);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 10px;
+            z-index: 10000;
+            box-shadow: 0 -2px 40px rgba(0, 0, 0, .5)
+        }
+
+        #sb {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 242, 255, .2);
+            background: var(--ad);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--tf), box-shadow var(--tf), transform var(--tf);
+            flex-shrink: 0
+        }
+
+        #sb:hover {
+            background: rgba(0, 242, 255, .2);
+            box-shadow: 0 0 20px var(--ag);
+            transform: scale(1.05)
+        }
+
+        #sb svg {
+            width: 20px;
+            height: 20px
+        }
+
+        .tbdiv {
+            width: 1px;
+            height: 28px;
+            background: var(--gbr);
+            flex-shrink: 0
+        }
+
+        #ta {
+            display: flex;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden
+        }
+
+        .tab {
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid var(--gbr);
+            background: var(--gb);
+            color: var(--ts);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all var(--tf);
+            white-space: nowrap
+        }
+
+        .tab:hover {
+            background: var(--gh);
+            color: var(--tp)
+        }
+
+        .tab.active {
+            background: var(--ad);
+            border-color: rgba(0, 242, 255, .3);
+            color: var(--ac)
+        }
+
+        #clk {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+            flex-shrink: 0
+        }
+
+        #ct {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .5px
+        }
+
+        #cd {
+            font-size: 10px;
+            color: var(--ts)
+        }
+
+        #sm {
+            position: fixed;
+            bottom: calc(var(--th) + 8px);
+            left: 16px;
+            width: 300px;
+            background: rgba(10, 12, 28, .88);
+            backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid var(--gbr);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+            z-index: 9999;
+            transform-origin: bottom left;
+            transform: scale(.92) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all var(--ts2)
+        }
+
+        #sm.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: all
+        }
+
+        #sm h3 {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ts);
+            margin-bottom: 10px
+        }
+
+        .smi {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: background var(--tf)
+        }
+
+        .smi:hover {
+            background: var(--gh)
+        }
+
+        .smi .si {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            background: var(--gb);
+            border: 1px solid var(--gbr);
+            flex-shrink: 0
+        }
+
+        .smi strong {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--tp)
+        }
+
+        .smi span {
+            font-size: 10px;
+            color: var(--ts)
+        }
+
+        .window {
+            position: absolute;
+            min-width: 300px;
+            min-height: 180px;
+            background: var(--gb);
+            backdrop-filter: blur(30px) saturate(160%);
+            border: 1px solid var(--gbr);
+            border-radius: var(--wr);
+            box-shadow: var(--sw);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: box-shadow var(--ts2);
+            transform-origin: center
+        }
+
+        .window.sp {
+            animation: wSp .25s cubic-bezier(.34, 1.56, .64, 1) forwards
+        }
+
+        @keyframes wSp {
+            from {
+                opacity: 0;
+                transform: scale(.88) translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0)
+            }
+        }
+
+        .window.cl {
+            animation: wCl .18s ease-in forwards
+        }
+
+        @keyframes wCl {
+            from {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(.85) translateY(20px)
+            }
+        }
+
+        .window.active {
+            box-shadow: var(--sa);
+            border-color: rgba(0, 242, 255, .18)
+        }
+
+        .window.minimized {
+            display: none
+        }
+
+        .titlebar {
+            height: var(--tr);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            background: rgba(255, 255, 255, .03);
+            border-bottom: 1px solid var(--gbr);
+            cursor: grab;
+            flex-shrink: 0
+        }
+
+        .titlebar:active {
+            cursor: grabbing
+        }
+
+        .wc2 {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0
+        }
+
+        .wb {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: transform var(--tf);
+            position: relative;
+            font-size: 0
+        }
+
+        .wb::after {
+            content: '';
+            position: absolute;
+            opacity: 0;
+            transition: opacity var(--tf)
+        }
+
+        .wc2:hover .wb::after {
+            opacity: 1
+        }
+
+        .wb.X {
+            background: #ff5f57;
+            box-shadow: 0 0 6px rgba(255, 95, 87, .5)
+        }
+
+        .wb.X::after {
+            content: '×';
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, .6)
+        }
+
+        .wb.M {
+            background: #ffbd2e;
+            box-shadow: 0 0 6px rgba(255, 189, 46, .5)
+        }
+
+        .wb.M::after {
+            content: '−';
+            font-size: 10px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, .5)
+        }
+
+        .wb:hover {
+            transform: scale(1.15)
+        }
+
+        .tbt {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ts);
+            text-align: center;
+            pointer-events: none
+        }
+
+        .tbi {
+            font-size: 14px;
+            flex-shrink: 0
+        }
+
+        .wn {
+            flex: 1;
+            overflow: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, .1) transparent
+        }
+
+        .wn::-webkit-scrollbar {
+            width: 5px
+        }
+
+        .wn::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .12);
+            border-radius: 10px
+        }
+
+        /* TERMINAL */
+        .term {
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            height: 100%;
+            display: flex;
+            flex-direction: column
+        }
+
+        .tout {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .tl {
+            line-height: 1.6
+        }
+
+        .tl.tp {
+            color: var(--ac)
+        }
+
+        .tl.to {
+            color: rgba(255, 255, 255, .7)
+        }
+
+        .tl.te {
+            color: #ff6b6b
+        }
+
+        .tl.ti {
+            color: #a8edce
+        }
+
+        .trow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--gbr)
+        }
+
+        .tps {
+            color: var(--ac);
+            font-weight: 500;
+            flex-shrink: 0
+        }
+
+        .tin {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--tp);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            caret-color: var(--ac)
+        }
+
+        /* SYSINFO */
+        .si2 {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            height: 100%
+        }
+
+        .sil {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--ad);
+            border: 1px solid rgba(0, 242, 255, .18);
+            border-radius: 12px
+        }
+
+        .sil .lic {
+            font-size: 34px;
+            line-height: 1
+        }
+
+        .sil h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--ac)
+        }
+
+        .sil p {
+            font-size: 11px;
+            color: var(--ts);
+            margin-top: 2px
+        }
+
+        .igr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px
+        }
+
+        .ic2 {
+            padding: 12px;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--gbr);
+            border-radius: 10px;
+            transition: var(--tf)
+        }
+
+        .ic2:hover {
+            background: var(--gh);
+            border-color: rgba(255, 255, 255, .12)
+        }
+
+        .ic2 .lb {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--ts);
+            margin-bottom: 3px
+        }
+
+        .ic2 .vl {
+            font-size: 13px;
+            font-weight: 500
+        }
+
+        .ic2 .vl.ac {
+            color: var(--ac)
+        }
+
+        .ub {
+            height: 4px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 2px;
+            margin-top: 7px;
+            overflow: hidden
+        }
+
+        .uf {
+            height: 100%;
+            width: 72%;
+            background: linear-gradient(90deg, var(--ac), #6f86ff);
+            border-radius: 2px;
+            animation: up 3s ease-in-out infinite
+        }
+
+        @keyframes up {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .6
+            }
+        }
+
+        /* NOTEPAD */
+        .npad {
+            display: flex;
+            flex-direction: column;
+            height: 100%
+        }
+
+        .ntabs {
+            display: flex;
+            gap: 4px;
+            padding: 8px 10px 0;
+            border-bottom: 1px solid var(--gbr);
+            background: rgba(255, 255, 255, .02)
+        }
+
+        .ntab {
+            padding: 5px 14px;
+            border-radius: 8px 8px 0 0;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--ts);
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all var(--tf)
+        }
+
+        .ntab.active {
+            background: var(--ad);
+            border-color: rgba(0, 242, 255, .2);
+            color: var(--ac)
+        }
+
+        .ntab:hover:not(.active) {
+            background: var(--gh);
+            color: var(--tp)
+        }
+
+        .ntoolbar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--gbr)
+        }
+
+        .ntoolbar span {
+            font-size: 10px;
+            color: var(--ts)
+        }
+
+        #nsave {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 242, 255, .3);
+            background: var(--ad);
+            color: var(--ac);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background var(--tf)
+        }
+
+        #nsave:hover {
+            background: rgba(0, 242, 255, .2)
+        }
+
+        .ntextarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--tp);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: 1.7;
+            padding: 14px;
+            resize: none;
+            width: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, .1) transparent
+        }
+
+        /* CALENDAR */
+        .cal {
+            padding: 16px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .calhdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .calmonth {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tp)
+        }
+
+        .calnav {
+            display: flex;
+            gap: 6px
+        }
+
+        .calnav button {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--gbr);
+            background: var(--gb);
+            color: var(--tp);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--tf)
+        }
+
+        .calnav button:hover {
+            background: var(--ad);
+            border-color: rgba(0, 242, 255, .3);
+            color: var(--ac)
+        }
+
+        .caldow {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 2px
+        }
+
+        .caldow div {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--ts);
+            padding: 4px 0;
+            text-transform: uppercase
+        }
+
+        .calgrid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            flex: 1
+        }
+
+        .cday {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ts);
+            cursor: pointer;
+            min-height: 36px;
+            transition: background var(--tf), color var(--tf)
+        }
+
+        .cday:hover {
+            background: var(--gh);
+            color: var(--tp)
+        }
+
+        .cday.today {
+            background: var(--ad);
+            color: var(--ac);
+            border: 1px solid rgba(0, 242, 255, .3);
+            font-weight: 700
+        }
+
+        .cday.other {
+            opacity: .3
+        }
+
+        .cday.selected {
+            background: rgba(0, 242, 255, .25);
+            color: var(--ac)
+        }
+
+        /* CALCULATOR */
+        .calc {
+            padding: 14px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .cdisp {
+            background: rgba(0, 0, 0, .3);
+            border: 1px solid var(--gbr);
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: right;
+            flex-shrink: 0
+        }
+
+        .cdisp .csub {
+            font-size: 11px;
+            color: var(--ts);
+            min-height: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .cdisp .cmain {
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--tp);
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .cbgrid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+            flex: 1
+        }
+
+        .cb {
+            border-radius: 10px;
+            border: 1px solid var(--gbr);
+            background: rgba(255, 255, 255, .05);
+            color: var(--tp);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background var(--tf), transform var(--tf);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .cb:hover {
+            background: rgba(255, 255, 255, .1);
+            transform: scale(1.04)
+        }
+
+        .cb:active {
+            transform: scale(.96)
+        }
+
+        .cb.op {
+            background: rgba(0, 242, 255, .1);
+            color: var(--ac);
+            border-color: rgba(0, 242, 255, .2)
+        }
+
+        .cb.op:hover {
+            background: rgba(0, 242, 255, .2)
+        }
+
+        .cb.eq {
+            background: var(--ac);
+            color: #03040d;
+            border-color: transparent;
+            font-weight: 700
+        }
+
+        .cb.eq:hover {
+            background: #33f5ff
+        }
+
+        .cb.clr {
+            background: rgba(255, 95, 87, .12);
+            color: #ff5f57;
+            border-color: rgba(255, 95, 87, .2)
+        }
+
+        .cb.clr:hover {
+            background: rgba(255, 95, 87, .22)
+        }
+
+        .cb.wide {
+            grid-column: span 2
+        }
+
+        /* CHESS */
+        .chess {
+            padding: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center
+        }
+
+        .chess-status {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ac);
+            text-align: center;
+            min-height: 20px
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            border: 1px solid var(--gbr);
+            border-radius: 8px;
+            overflow: hidden;
+            width: min(320px, 100%);
+            height: min(320px, 100%);
+            flex-shrink: 0
+        }
+
+        .sq {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            transition: background .1s;
+            position: relative;
+            aspect-ratio: 1
+        }
+
+        .sq.light {
+            background: rgba(200, 210, 240, .08)
+        }
+
+        .sq.dark {
+            background: rgba(20, 30, 60, .5)
+        }
+
+        .sq.selected {
+            background: rgba(0, 242, 255, .3) !important
+        }
+
+        .sq.valid-move::after {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            background: rgba(0, 242, 255, .5)
+        }
+
+        .sq.capture-move {
+            background: rgba(255, 100, 100, .3) !important
+        }
+
+        .chess-info {
+            font-size: 11px;
+            color: var(--ts);
+            text-align: center
+        }
+
+        .chess-btn {
+            padding: 6px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--gbr);
+            background: var(--gb);
+            color: var(--ts);
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all var(--tf)
+        }
+
+        .chess-btn:hover {
+            background: var(--ad);
+            border-color: rgba(0, 242, 255, .3);
+            color: var(--ac)
+        }
+
+        /* CTX */
+        #ctx {
+            position: fixed;
+            background: rgba(10, 12, 28, .94);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--gbr);
+            border-radius: 10px;
+            padding: 6px;
+            min-width: 185px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .6);
+            z-index: 99999;
+            transform-origin: top left;
+            animation: ctxIn .12s ease
+        }
+
+        @keyframes ctxIn {
+            from {
+                opacity: 0;
+                transform: scale(.94)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .cxi {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--ts);
+            cursor: pointer;
+            transition: background var(--tf), color var(--tf)
+        }
+
+        .cxi:hover {
+            background: var(--gh);
+            color: var(--tp)
+        }
+
+        .cxsep {
+            height: 1px;
+            background: var(--gbr);
+            margin: 4px 0
+        }
+    </style>
+</head>
+
+<body>
+    <div id="desktop">
+        <canvas id="wc"></canvas>
+        <div id="ig">
+            <div class="di" data-app="terminal">
+                <div class="ii">🖥️</div><span>Terminal</span>
+            </div>
+            <div class="di" data-app="sysinfo">
+                <div class="ii">⚡</div><span>System Info</span>
+            </div>
+            <div class="di" data-app="notepad">
+                <div class="ii">📝</div><span>Notepad</span>
+            </div>
+            <div class="di" data-app="calendar">
+                <div class="ii">📅</div><span>Calendar</span>
+            </div>
+            <div class="di" data-app="calculator">
+                <div class="ii">🔢</div><span>Calc</span>
+            </div>
+            <div class="di" data-app="chess">
+                <div class="ii">♟️</div><span>Chess</span>
+            </div>
+        </div>
+    </div>
+    <div id="tb">
+        <button id="sb" title="Start">
+            <svg viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="3.5" fill="var(--ac)" opacity=".9" />
+                <circle cx="10" cy="10" r="7" stroke="var(--ac)" stroke-width="1.2" opacity=".4" />
+                <circle cx="10" cy="10" r="10" stroke="var(--ac)" stroke-width=".6" opacity=".15" />
+            </svg>
+        </button>
+        <div class="tbdiv"></div>
+        <div id="ta"></div>
+        <div id="clk">
+            <div id="ct">12:00 AM</div>
+            <div id="cd">Aether OS</div>
+        </div>
+    </div>
+    <div id="sm">
+        <h3>Apps</h3>
+        <div class="smi" data-app="terminal">
+            <div class="si">🖥️</div>
+            <div><strong>Terminal</strong><span>Command shell</span></div>
+        </div>
+        <div class="smi" data-app="sysinfo">
+            <div class="si">⚡</div>
+            <div><strong>System Info</strong><span>OS diagnostics</span></div>
+        </div>
+        <div class="smi" data-app="notepad">
+            <div class="si">📝</div>
+            <div><strong>Notepad</strong><span>Auto-saving notes</span></div>
+        </div>
+        <div class="smi" data-app="calendar">
+            <div class="si">📅</div>
+            <div><strong>Calendar</strong><span>Month view</span></div>
+        </div>
+        <div class="smi" data-app="calculator">
+            <div class="si">🔢</div>
+            <div><strong>Calculator</strong><span>Arithmetic</span></div>
+        </div>
+        <div class="smi" data-app="chess">
+            <div class="si">♟️</div>
+            <div><strong>Chess</strong><span>2-player chess</span></div>
+        </div>
+    </div>
+    <div id="ctx" style="display:none"></div>
+    <script>
+        /* ══ LIVE WALLPAPER ══════════════════════════════════════════ */
+        (function () {
+            const cv = document.getElementById('wc'), cx = cv.getContext('2d');
+            let W = 0, H = 0, mx = 0, my = 0;
+            function resize() {
+                const d = document.getElementById('desktop');
+                W = cv.width = d.clientWidth || window.innerWidth;
+                H = cv.height = d.clientHeight || (window.innerHeight - 56);
+                buildWisps();
+            }
+            document.addEventListener('mousemove', e => { mx = (e.clientX / window.innerWidth - .5) * 2; my = (e.clientY / window.innerHeight - .5) * 2; });
+            window.addEventListener('resize', resize);
+            const STARS = Array.from({ length: 480 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.4 + .2, b: Math.random() * .65 + .15, sp: Math.random() * .015 + .004, ph: Math.random() * Math.PI * 2, d: Math.random() * 3 + 1, c: ['#fff', '#fff', '#a8d8ff', '#ffd6a5', '#d4aaff'][Math.floor(Math.random() * 5)] }));
+            const sh = [];
+            setInterval(() => { if (W && Math.random() < .6) sh.push({ x: Math.random() * W, y: Math.random() * H * .5, len: Math.random() * 180 + 80, sp: Math.random() * 7 + 4, a: Math.PI / 5 + Math.random() * .4, life: 1, decay: Math.random() * .018 + .012 }); }, 1800);
+            let wisps = [];
+            function buildWisps() {
+                wisps = [
+                    { cx: .72, cy: .22, rxf: .38, ryf: .28, c1: 'rgba(10,15,58,0.9)', t: 0, ts: .00012 },
+                    { cx: .50, cy: .48, rxf: .30, ryf: .22, c1: 'rgba(0,120,160,0.18)', t: 2.1, ts: .00009 },
+                    { cx: .82, cy: .65, rxf: .28, ryf: .32, c1: 'rgba(80,20,120,0.20)', t: 5, ts: .00015 },
+                    { cx: .20, cy: .75, rxf: .22, ryf: .18, c1: 'rgba(120,30,80,0.14)', t: 1.3, ts: .00011 },
+                    { cx: .35, cy: .88, rxf: .35, ryf: .20, c1: 'rgba(0,60,100,0.22)', t: 3.7, ts: .00008 },
+                ];
+            }
+            const aurora = [
+                { y: .18, amp: .055, freq: 1.3, sp: .00018, ph: 0, col: 'rgba(0,242,255,0.07)' },
+                { y: .30, amp: .040, freq: .9, sp: .00013, ph: 1.6, col: 'rgba(111,134,255,0.06)' },
+                { y: .10, amp: .030, freq: 1.8, sp: .00022, ph: 3.1, col: 'rgba(191,134,255,0.05)' },
+            ];
+            function drawBg() { cx.fillStyle = '#03040d'; cx.fillRect(0, 0, W, H); const g = cx.createRadialGradient(W * .5, 0, 0, W * .5, 0, H * .75); g.addColorStop(0, 'rgba(5,12,40,0.85)'); g.addColorStop(1, 'transparent'); cx.fillStyle = g; cx.fillRect(0, 0, W, H); }
+            function drawWisps() { wisps.forEach((w, i) => { w.t += w.ts; const rx = W * w.rxf, ry = H * w.ryf, mr = Math.max(rx, ry, 1), ox = Math.sin(w.t * 1.3) * W * .015, oy = Math.cos(w.t * .9) * H * .012, px = w.cx * W + ox + mx * 8 / (i + 1), py = w.cy * H + oy + my * 5 / (i + 1); const g = cx.createRadialGradient(px, py, 0, px, py, mr); g.addColorStop(0, w.c1); g.addColorStop(1, 'transparent'); cx.save(); cx.translate(px, py); cx.scale(rx / mr, ry / mr); cx.translate(-px, -py); cx.fillStyle = g; cx.beginPath(); cx.arc(px, py, mr, 0, Math.PI * 2); cx.fill(); cx.restore(); }); }
+            function drawAurora() { aurora.forEach(a => { a.ph += a.sp; const bw = H * .2, pts = 100; cx.save(); for (let i = 0; i <= pts; i++) { const x = (i / pts) * W, yc = a.y * H + Math.sin(i / pts * Math.PI * 2 * a.freq + a.ph) * a.amp * H, g = cx.createLinearGradient(x, yc - bw * .5, x, yc + bw * .5); g.addColorStop(0, 'transparent'); g.addColorStop(.5, a.col); g.addColorStop(1, 'transparent'); cx.fillStyle = g; cx.fillRect(x - W / pts * .6, yc - bw * .5, W / pts * 1.2, bw); } cx.restore(); }); }
+            function drawStars(t) { STARS.forEach(s => { const tw = Math.sin(t * s.sp * 60 + s.ph) * .4 + .6; cx.save(); cx.globalAlpha = s.b * tw; cx.fillStyle = cx.shadowColor = s.c; cx.shadowBlur = s.r > 1 ? 5 : 2; cx.beginPath(); cx.arc(s.x * W + mx * s.d * 3, s.y * H + my * s.d * 2, s.r, 0, Math.PI * 2); cx.fill(); cx.restore(); }); }
+            function drawShooters() { for (let i = sh.length - 1; i >= 0; i--) { const s = sh[i]; s.x += Math.cos(s.a) * s.sp; s.y += Math.sin(s.a) * s.sp; s.life -= s.decay; if (s.life <= 0 || s.x > W + 50 || s.y > H + 50) { sh.splice(i, 1); continue; } const tx = s.x - Math.cos(s.a) * s.len, ty = s.y - Math.sin(s.a) * s.len, g = cx.createLinearGradient(tx, ty, s.x, s.y); g.addColorStop(0, 'transparent'); g.addColorStop(.6, `rgba(200,240,255,${s.life * .35})`); g.addColorStop(1, `rgba(255,255,255,${s.life * .9})`); cx.save(); cx.strokeStyle = g; cx.lineWidth = 1.5; cx.shadowColor = 'rgba(160,230,255,.9)'; cx.shadowBlur = 8; cx.beginPath(); cx.moveTo(tx, ty); cx.lineTo(s.x, s.y); cx.stroke(); cx.globalAlpha = s.life; cx.fillStyle = '#fff'; cx.shadowBlur = 12; cx.beginPath(); cx.arc(s.x, s.y, 1.5, 0, Math.PI * 2); cx.fill(); cx.restore(); } }
+            let t = 0; function loop() { t += .016; drawBg(); drawWisps(); drawAurora(); drawStars(t); drawShooters(); requestAnimationFrame(loop); }
+            requestAnimationFrame(() => { resize(); loop(); });
+        })();
+
+        /* ══ CLOCK ═══════════════════════════════════════════════════ */
+        function uc() { const n = new Date(); document.getElementById('ct').textContent = n.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }); document.getElementById('cd').textContent = n.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
+        uc(); setInterval(uc, 1000);
+
+        /* ══ CONTEXT MENU ════════════════════════════════════════════ */
+        const ctxEl = document.getElementById('ctx');
+        function showCtx(x, y, items) { ctxEl.innerHTML = ''; items.forEach(it => { if (it === '|') { const d = document.createElement('div'); d.className = 'cxsep'; ctxEl.appendChild(d); return; } const el = document.createElement('div'); el.className = 'cxi'; el.innerHTML = `<span>${it.ic}</span><span>${it.lb}</span>`; el.onclick = () => { ctxEl.style.display = 'none'; it.fn(); }; ctxEl.appendChild(el); }); ctxEl.style.display = 'block'; ctxEl.style.left = Math.min(x, window.innerWidth - 195) + 'px'; ctxEl.style.top = Math.min(y, window.innerHeight - items.length * 38) + 'px'; }
+        document.getElementById('desktop').addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e.clientX, e.clientY, [{ ic: '🖥️', lb: 'Terminal', fn: () => WM.open('terminal') }, { ic: '📝', lb: 'Notepad', fn: () => WM.open('notepad') }, { ic: '♟️', lb: 'Chess', fn: () => WM.open('chess') }, '|', { ic: '🔄', lb: 'Refresh', fn: () => location.reload() }]); });
+        document.addEventListener('click', e => { if (!ctxEl.contains(e.target)) ctxEl.style.display = 'none'; });
+
+        /* ══ START MENU ══════════════════════════════════════════════ */
+        const smEl = document.getElementById('sm'), sbEl = document.getElementById('sb');
+        let smO = false;
+        sbEl.addEventListener('click', e => { e.stopPropagation(); smO = !smO; smEl.classList.toggle('open', smO); });
+        document.addEventListener('click', e => { if (smO && !smEl.contains(e.target) && e.target !== sbEl) { smO = false; smEl.classList.remove('open'); } });
+        document.querySelectorAll('.smi').forEach(el => el.addEventListener('click', () => { smO = false; smEl.classList.remove('open'); WM.open(el.dataset.app); }));
+        document.querySelectorAll('.di').forEach(el => el.addEventListener('dblclick', () => WM.open(el.dataset.app)));
+
+        /* ══ WINDOW MANAGER ══════════════════════════════════════════ */
+        const WM = (() => {
+            const desk = document.getElementById('desktop'), tbar = document.getElementById('ta');
+            const wins = {}; let zT = 100;
+            const APPS = {
+                terminal: { title: 'Terminal', icon: '🖥️', w: 600, h: 380, build: buildTerm },
+                sysinfo: { title: 'System Info', icon: '⚡', w: 450, h: 380, build: buildSysInfo },
+                notepad: { title: 'Notepad', icon: '📝', w: 520, h: 400, build: buildNotepad },
+                calendar: { title: 'Calendar', icon: '📅', w: 380, h: 400, build: buildCalendar },
+                calculator: { title: 'Calculator', icon: '🔢', w: 300, h: 420, build: buildCalc },
+                chess: { title: 'Chess', icon: '♟️', w: 380, h: 440, build: buildChess },
+            };
+            const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+            const sv = (id, x, y) => { try { localStorage.setItem('aeth_' + id, JSON.stringify({ x, y })) } catch { } };
+            const ld = id => { try { const d = localStorage.getItem('aeth_' + id); return d ? JSON.parse(d) : null } catch { return null } };
+            function act(id) { Object.values(wins).forEach(w => { w.el.classList.remove('active'); w.btn && w.btn.classList.remove('active'); }); if (!wins[id]) return; wins[id].el.classList.add('active'); wins[id].el.style.zIndex = ++zT; wins[id].btn && wins[id].btn.classList.add('active'); }
+            function drag(el, tb, id) { let on = false, ox = 0, oy = 0; tb.addEventListener('mousedown', e => { if (e.target.classList.contains('wb')) return; on = true; const r = el.getBoundingClientRect(); ox = e.clientX - r.left; oy = e.clientY - r.top; el.style.transition = 'none'; act(id); e.preventDefault(); }); document.addEventListener('mousemove', e => { if (!on) return; const dr = desk.getBoundingClientRect(); el.style.left = cl(e.clientX - dr.left - ox, -el.offsetWidth + 60, dr.width - 60) + 'px'; el.style.top = cl(e.clientY - dr.top - oy, 0, dr.height - 40) + 'px'; }); document.addEventListener('mouseup', () => { if (!on) return; on = false; el.style.transition = ''; sv(id, parseInt(el.style.left), parseInt(el.style.top)); }); }
+            function open(key) {
+                const app = APPS[key]; if (!app) return; if (wins[key] && !wins[key].minimized) { act(key); return; } if (wins[key] && wins[key].minimized) { restore(key); return; }
+                const el = document.createElement('div'); el.className = 'window sp';
+                const tb = document.createElement('div'); tb.className = 'titlebar'; tb.innerHTML = `<div class="wc2"><button class="wb X"></button><button class="wb M"></button></div><div class="tbi">${app.icon}</div><div class="tbt">${app.title}</div><div style="width:40px"></div>`;
+                const wn = document.createElement('div'); wn.className = 'wn'; app.build(wn);
+                el.append(tb, wn);
+                const sv2 = ld(key), dw = desk.offsetWidth, dh = desk.offsetHeight;
+                const dx = cl(Math.round(dw / 2 - app.w / 2 + Math.random() * 60 - 30), 40, dw - app.w - 40);
+                const dy = cl(Math.round(dh / 2 - app.h / 2 + Math.random() * 40 - 20), 20, dh - app.h - 20);
+                Object.assign(el.style, { width: app.w + 'px', height: app.h + 'px', left: (sv2 ? sv2.x : dx) + 'px', top: (sv2 ? sv2.y : dy) + 'px', zIndex: ++zT });
+                desk.appendChild(el); setTimeout(() => el.classList.remove('sp'), 300);
+                const btn = document.createElement('button'); btn.className = 'tab active'; btn.innerHTML = `<span>${app.icon}</span><span>${app.title}</span>`; btn.onclick = () => wins[key].minimized ? restore(key) : minimize(key); tbar.appendChild(btn);
+                wins[key] = { el, btn, minimized: false };
+                el.addEventListener('mousedown', () => act(key));
+                tb.querySelector('.wb.X').addEventListener('click', e => { e.stopPropagation(); close(key); });
+                tb.querySelector('.wb.M').addEventListener('click', e => { e.stopPropagation(); minimize(key); });
+                drag(el, tb, key); act(key);
+            }
+            function close(id) { const w = wins[id]; if (!w) return; w.el.classList.add('cl'); setTimeout(() => { w.el.remove(); w.btn && w.btn.remove(); delete wins[id]; }, 190); }
+            function minimize(id) { const w = wins[id]; if (!w || w.minimized) return; w.minimized = true; w.el.classList.add('cl'); setTimeout(() => { w.el.classList.add('minimized'); w.el.classList.remove('cl'); w.btn && w.btn.classList.remove('active'); }, 190); }
+            function restore(id) { const w = wins[id]; if (!w || !w.minimized) return; w.minimized = false; w.el.classList.remove('minimized'); w.el.classList.add('sp'); setTimeout(() => w.el.classList.remove('sp'), 300); act(id); }
+            return { open, close, minimize, restore };
+        })();
+
+        /* ══ TERMINAL ════════════════════════════════════════════════ */
+        function buildTerm(c) {
+            const uid = Math.random().toString(36).slice(2, 7);
+            c.innerHTML = `<div class="term"><div class="tout" id="to${uid}"><div class="tl ti">  ___       _   _               ___  ____</div><div class="tl ti"> / _ |___ _| |_| |_  ___ _ _  / _ \\/ ___|</div><div class="tl ti">| |_| / -_) |  _| ' \\/ -_) '_| |_| \\___ \\</div><div class="tl ti"> \\__,_\\___|\\__|_||_\\___|_|  \\___/|____/</div><div class="tl to" style="margin-top:8px">Aether OS Terminal v1.0.0</div><div class="tl to">Type <span style="color:var(--ac)">help</span> for commands.</div><div class="tl"></div></div><div class="trow"><span class="tps">aether@os ~$</span><input class="tin" type="text" autocomplete="off" spellcheck="false" placeholder="type a command..."/></div></div>`;
+            const out = c.querySelector('#to' + uid), inp = c.querySelector('.tin'); let hist = [], hi = -1;
+            const cmds = { help: () => [{ c: 'ti', v: 'Commands: help version time whoami echo ls uname neofetch clear' }], version: () => [{ c: 'ti', v: 'Aether OS v1.0.0' }], time: () => [{ c: 'to', v: new Date().toLocaleString() }], whoami: () => [{ c: 'to', v: 'aether (uid=1000)' }], clear: () => { out.innerHTML = ''; return []; }, ls: () => [{ c: 'to', v: 'apps/ sys/ home/ tmp/ README.md config.json' }], 'uname -a': () => [{ c: 'to', v: 'AetherOS 1.0.0 x86_64 HTML5' }], neofetch: () => [{ c: 'ti', v: '🌌 Aether OS v1.0.0' }, { c: 'to', v: 'Theme:  Glassmorphic Dark' }, { c: 'to', v: 'Accent: #00f2ff' }, { c: 'to', v: 'Time:   ' + new Date().toLocaleTimeString() }, { c: 'to', v: 'Uptime: ' + Math.floor(performance.now() / 60000) + ' min' }, { c: 'to', v: 'Memory: ' + (navigator.deviceMemory || '?') + ' GB' }, { c: 'to', v: 'Cores:  ' + (navigator.hardwareConcurrency || '?') }] };
+            function ln(cls, txt) { const d = document.createElement('div'); d.className = 'tl' + (cls ? ' ' + cls : ''); d.textContent = txt; out.appendChild(d); out.scrollTop = out.scrollHeight; }
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const cmd = inp.value.trim(); if (!cmd) return; hist.unshift(cmd); hi = -1; ln('tp', 'aether@os ~$ ' + cmd); if (cmd.startsWith('echo ')) ln('to', cmd.slice(5)); else if (cmds[cmd]) (cmds[cmd]() || []).forEach(r => ln(r.c, r.v)); else { ln('te', 'bash: ' + cmd + ': command not found'); ln('to', "Type 'help' for commands."); } ln('', ''); inp.value = ''; } if (e.key === 'ArrowUp') { hi = Math.min(hi + 1, hist.length - 1); inp.value = hist[hi] || ''; e.preventDefault(); } if (e.key === 'ArrowDown') { hi = Math.max(hi - 1, -1); inp.value = hi >= 0 ? hist[hi] : ''; e.preventDefault(); } });
+            c.addEventListener('click', () => inp.focus());
+        }
+
+        /* ══ SYSTEM INFO ═════════════════════════════════════════════ */
+        function buildSysInfo(c) {
+            const t0 = Date.now();
+            c.innerHTML = `<div class="si2"><div class="sil"><div class="lic">🌌</div><div><h1>Aether OS</h1><p>Version 1.0.0 — Build 2025.01 — Stable</p></div></div><div class="igr"><div class="ic2"><div class="lb">System Time</div><div class="vl ac" id="sit">—</div></div><div class="ic2"><div class="lb">Platform</div><div class="vl">Browser / HTML5</div></div><div class="ic2"><div class="lb">Kernel</div><div class="vl">AetherKernel 1.0</div></div><div class="ic2"><div class="lb">Architecture</div><div class="vl">x86_64 (WebAssembly)</div></div><div class="ic2"><div class="lb">Memory</div><div class="vl">${navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Unknown'}</div></div><div class="ic2"><div class="lb">CPU Cores</div><div class="vl">${navigator.hardwareConcurrency || '?'} logical</div></div><div class="ic2" style="grid-column:1/-1"><div class="lb">Session Uptime</div><div class="vl" id="siu">0s</div><div class="ub"><div class="uf"></div></div></div></div></div>`;
+            const siT = c.querySelector('#sit'), siU = c.querySelector('#siu');
+            function tk() { siT.textContent = new Date().toLocaleTimeString(); const e = Math.floor((Date.now() - t0) / 1000), m = Math.floor(e / 60), s = e % 60; siU.textContent = m > 0 ? m + 'm ' + s + 's' : s + 's'; } tk();
+            const iv = setInterval(tk, 1000); new MutationObserver(() => { if (!document.contains(c)) clearInterval(iv); }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        /* ══ NOTEPAD ═════════════════════════════════════════════════ */
+        function buildNotepad(c) {
+            const KEYS = ['note_0', 'note_1', 'note_2']; const NAMES = ['Note 1', 'Note 2', 'Note 3'];
+            let cur = 0;
+            c.innerHTML = `<div class="npad"><div class="ntabs">${NAMES.map((n, i) => `<div class="ntab${i === 0 ? ' active' : ''}" data-i="${i}">${n}</div>`).join('')}</div><div class="ntoolbar"><span id="nst">Auto-saved</span><button id="nsave">Save Now</button></div><textarea class="ntextarea" id="ntxt" placeholder="Start typing your note..."></textarea></div>`;
+            const txt = c.querySelector('#ntxt'), nst = c.querySelector('#nst');
+            function load(i) { txt.value = localStorage.getItem(KEYS[i]) || ''; nst.textContent = 'Note ' + (i + 1); }
+            load(0);
+            c.querySelectorAll('.ntab').forEach(tab => tab.addEventListener('click', () => { cur = +tab.dataset.i; c.querySelectorAll('.ntab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); load(cur); }));
+            let sav; txt.addEventListener('input', () => { nst.textContent = 'Unsaved…'; clearTimeout(sav); sav = setTimeout(() => { localStorage.setItem(KEYS[cur], txt.value); nst.textContent = 'Saved ✓'; }, 800); });
+            c.querySelector('#nsave').addEventListener('click', () => { localStorage.setItem(KEYS[cur], txt.value); nst.textContent = 'Saved ✓'; });
+        }
+
+        /* ══ CALENDAR ════════════════════════════════════════════════ */
+        function buildCalendar(c) {
+            const today = new Date(); let yr = today.getFullYear(), mo = today.getMonth(), sel = null;
+            const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            c.innerHTML = `<div class="cal"><div class="calhdr"><div class="calmonth" id="cmh"></div><div class="calnav"><button id="cpv">‹</button><button id="cnt">›</button></div></div><div class="caldow">${DAYS.map(d => `<div>${d}</div>`).join('')}</div><div class="calgrid" id="cgr"></div></div>`;
+            function render() {
+                c.querySelector('#cmh').textContent = MONTHS[mo] + ' ' + yr;
+                const grid = c.querySelector('#cgr'); grid.innerHTML = '';
+                const first = new Date(yr, mo, 1).getDay(), days = new Date(yr, mo + 1, 0).getDate();
+                const prev = new Date(yr, mo, 0).getDate();
+                for (let i = 0; i < first; i++) { const d = document.createElement('div'); d.className = 'cday other'; d.textContent = prev - first + 1 + i; grid.appendChild(d); }
+                for (let i = 1; i <= days; i++) { const d = document.createElement('div'); d.className = 'cday' + (i === today.getDate() && mo === today.getMonth() && yr === today.getFullYear() ? ' today' : '') + (sel === `${yr}-${mo}-${i}` ? ' selected' : ''); d.textContent = i; d.addEventListener('click', () => { sel = `${yr}-${mo}-${i}`; render(); }); grid.appendChild(d); }
+                const rem = 42 - first - days; for (let i = 1; i <= rem; i++) { const d = document.createElement('div'); d.className = 'cday other'; d.textContent = i; grid.appendChild(d); }
+            }
+            render();
+            c.querySelector('#cpv').addEventListener('click', () => { mo--; if (mo < 0) { mo = 11; yr--; } render(); });
+            c.querySelector('#cnt').addEventListener('click', () => { mo++; if (mo > 11) { mo = 0; yr++; } render(); });
+        }
+
+        /* ══ CALCULATOR ══════════════════════════════════════════════ */
+        function buildCalc(c) {
+            c.innerHTML = `<div class="calc"><div class="cdisp"><div class="csub" id="csub"></div><div class="cmain" id="cval">0</div></div><div class="cbgrid">
+    <button class="cb clr" data-k="AC">AC</button><button class="cb op" data-k="+/-">+/-</button><button class="cb op" data-k="%">%</button><button class="cb op" data-k="/">÷</button>
+    <button class="cb" data-k="7">7</button><button class="cb" data-k="8">8</button><button class="cb" data-k="9">9</button><button class="cb op" data-k="*">×</button>
+    <button class="cb" data-k="4">4</button><button class="cb" data-k="5">5</button><button class="cb" data-k="6">6</button><button class="cb op" data-k="-">−</button>
+    <button class="cb" data-k="1">1</button><button class="cb" data-k="2">2</button><button class="cb" data-k="3">3</button><button class="cb op" data-k="+">+</button>
+    <button class="cb wide" data-k="0">0</button><button class="cb" data-k=".">.</button><button class="cb eq" data-k="=">=</button>
+  </div></div>`;
+            const disp = c.querySelector('#cval'), sub = c.querySelector('#csub');
+            let cur = '0', prev = '', op = '', fresh = false;
+            function upd() { disp.textContent = cur.length > 12 ? parseFloat(cur).toExponential(4) : cur; }
+            function press(k) {
+                if (k === 'AC') { cur = '0'; prev = ''; op = ''; fresh = false; sub.textContent = ''; }
+                else if (k === '+/-') { cur = cur.startsWith('-') ? cur.slice(1) : '-' + cur; }
+                else if (k === '%') { cur = String(parseFloat(cur) / 100); }
+                else if (['/', '*', '-', '+'].includes(k)) { prev = cur; op = k; sub.textContent = cur + ' ' + k; fresh = true; }
+                else if (k === '=') {
+                    if (!op || !prev) return;
+                    const a = parseFloat(prev), b = parseFloat(cur);
+                    let r; if (op === '/') r = b === 0 ? 'Error' : a / b; else if (op === '*') r = a * b; else if (op === '-') r = a - b; else r = a + b;
+                    sub.textContent = prev + ' ' + op + ' ' + cur + ' ='; cur = String(parseFloat(r.toFixed(10))); op = ''; prev = ''; fresh = true;
+                }
+                else if (k === '.') { if (fresh) { cur = '0.'; fresh = false; } else if (!cur.includes('.')) cur += '.' }
+                else { if (fresh || cur === '0') { cur = k; fresh = false; } else cur += k; }
+                upd();
+            }
+            c.querySelectorAll('.cb').forEach(btn => btn.addEventListener('click', () => press(btn.dataset.k)));
+            c.addEventListener('keydown', e => { const m = { 'Enter': '=', 'Backspace': () => { cur = cur.length > 1 ? cur.slice(0, -1) : '0'; upd(); }, 'Escape': 'AC' }; if (m[e.key]) typeof m[e.key] === 'function' ? m[e.key]() : press(m[e.key]); else if ('0123456789.+-*/%'.includes(e.key)) press(e.key); });
+        }
+
+        /* ══ CHESS ═══════════════════════════════════════════════════ */
+        function buildChess(c) {
+            const W = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], P = 'P';
+            const GLYPHS = { wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙', bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟' };
+            function initBoard() {
+                const b = Array(8).fill(null).map(() => Array(8).fill(null));
+                W.forEach((p, i) => { b[0][i] = { t: p, c: 'b' }; b[7][i] = { t: p, c: 'w' }; });
+                for (let i = 0; i < 8; i++) { b[1][i] = { t: P, c: 'b' }; b[6][i] = { t: P, c: 'w' }; }
+                return b;
+            }
+            let board = initBoard(), turn = 'w', selR = null, selC = null, moves = [], status = 'White\'s turn';
+            c.innerHTML = `<div class="chess"><div class="chess-status" id="cst">White's turn ♙</div><div id="board"></div><div class="chess-info" id="cinf">Click a piece to select, then click destination</div><button class="chess-btn" id="cnew">New Game</button></div>`;
+            const boardEl = c.querySelector('#board'), stEl = c.querySelector('#cst');
+            function inBounds(r, cl) { return r >= 0 && r < 8 && cl >= 0 && cl < 8; }
+            function getMoves(b, r, cl) {
+                const piece = b[r][cl]; if (!piece) return []; const mv = [], { t, c } = piece, dir = c === 'w' ? -1 : 1;
+                if (t === 'P') { const nr = r + dir; if (inBounds(nr, cl) && !b[nr][cl]) { mv.push([nr, cl]); const start = (c === 'w' && r === 6) || (c === 'b' && r === 1); if (start && !b[r + dir * 2][cl]) mv.push([r + dir * 2, cl]); } [-1, 1].forEach(d => { if (inBounds(nr, cl + d) && b[nr][cl + d] && b[nr][cl + d].c !== c) mv.push([nr, cl + d]); }); }
+                if (t === 'R' || t === 'Q') [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dr, dc]) => { let nr = r + dr, nc = cl + dc; while (inBounds(nr, nc)) { if (b[nr][nc]) { if (b[nr][nc].c !== c) mv.push([nr, nc]); break; } mv.push([nr, nc]); nr += dr; nc += dc; } });
+                if (t === 'B' || t === 'Q') [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([dr, dc]) => { let nr = r + dr, nc = cl + dc; while (inBounds(nr, nc)) { if (b[nr][nc]) { if (b[nr][nc].c !== c) mv.push([nr, nc]); break; } mv.push([nr, nc]); nr += dr; nc += dc; } });
+                if (t === 'N') [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]].forEach(([dr, dc]) => { const nr = r + dr, nc = cl + dc; if (inBounds(nr, nc) && (!b[nr][nc] || b[nr][nc].c !== c)) mv.push([nr, nc]); });
+                if (t === 'K') [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]].forEach(([dr, dc]) => { const nr = r + dr, nc = cl + dc; if (inBounds(nr, nc) && (!b[nr][nc] || b[nr][nc].c !== c)) mv.push([nr, nc]); });
+                return mv;
+            }
+            function render() {
+                boardEl.innerHTML = '';
+                for (let r = 0; r < 8; r++)for (let cl = 0; cl < 8; cl++) {
+                    const sq = document.createElement('div');
+                    sq.className = 'sq ' + ((r + cl) % 2 === 0 ? 'light' : 'dark');
+                    const isMove = moves.some(([mr, mc]) => mr === r && mc === cl);
+                    if (selR === r && selC === cl) sq.classList.add('selected');
+                    else if (isMove) { if (board[r][cl]) sq.classList.add('capture-move'); else sq.classList.add('valid-move'); }
+                    const p = board[r][cl]; if (p) sq.textContent = GLYPHS[p.c + p.t] || '?';
+                    sq.addEventListener('click', () => clickSq(r, cl));
+                    boardEl.appendChild(sq);
+                }
+                stEl.textContent = status;
+            }
+            function clickSq(r, cl) {
+                const p = board[r][cl];
+                if (selR === null) { if (p && p.c === turn) { selR = r; selC = cl; moves = getMoves(board, r, cl); } }
+                else {
+                    const isMove = moves.some(([mr, mc]) => mr === r && mc === cl);
+                    if (isMove) {
+                        board[r][cl] = board[selR][selC]; board[selR][selC] = null;
+                        if (board[r][cl].t === 'P' && (r === 0 || r === 7)) board[r][cl].t = 'Q';
+                        turn = turn === 'w' ? 'b' : 'w';
+                        const hasMoves = board.some((row, rr) => row.some((_, cc) => board[rr][cc] && board[rr][cc].c === turn && getMoves(board, rr, cc).length > 0));
+                        status = hasMoves ? (turn === 'w' ? 'White' : 'Black') + "'s turn " + (turn === 'w' ? '♙' : '♟') : (turn === 'w' ? 'Black' : 'White') + ' wins! 🎉';
+                        selR = null; selC = null; moves = [];
+                    } else if (p && p.c === turn) { selR = r; selC = cl; moves = getMoves(board, r, cl); }
+                    else { selR = null; selC = null; moves = []; }
+                }
+                render();
+            }
+            c.querySelector('#cnew').addEventListener('click', () => { board = initBoard(); turn = 'w'; selR = null; selC = null; moves = []; status = "White's turn ♙"; render(); });
+            render();
+        }
+
+        /* ══ AUTO-OPEN ═══════════════════════════════════════════════ */
+        window.addEventListener('load', () => { setTimeout(() => WM.open('sysinfo'), 350); setTimeout(() => WM.open('terminal'), 700); });
+    </script>
+</body>
+
+</html>
